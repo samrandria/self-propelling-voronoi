@@ -68,6 +68,8 @@ I used computing clusters named `PBS`of the University of Tokyo for parameter ex
 
 Some Jupyter notebooks were used for timing functions, quick tests, and visualisation purposes.
 
+**Note**: for most of the bash scripts to work they need to be called in the same directory as the python files!
+
 ------------
 
 # How to use the building scripts on a server
