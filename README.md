@@ -31,7 +31,7 @@ In simplified terms:
     $E ≡ Sum_i [KA(A(ri) − A0)2 + KP (P(ri) − P0)2]$
     Where E is the tissue energy, KA and KP are two parameters related respectively to the area and perimeter stiffness, A(ri) and P(ri) are the area and perimeter of the cell of center ri, and A0 and P0 are target area and perimeter toward which cells should tend.
 
-- The cells can move, and the equation of motion can be written as $d_ri/d_t = µF_i + v_0 n_i$
+- The cells can move, and the equation of motion can be written as $$dr_i/d_t = µF_i + v_0 n_i$$
     - With Fi = −∇riE the mechanical force exerted on the i-th cell, E the global tissue energy, µ a motility term, v0 a fixed velocity magnitude, and n_i a polarity vector.
     - The polarity vector is defined as ni = (cos θi, sin θi), and is subject to random rotational
 diffusion, modelled as θi(t + ∆t) = θi(t) + eta_i*∆t, with eta_i a white noise term.
