@@ -28,7 +28,7 @@ In simplified terms:
 
 - The cells are subject to interaction with other cells, via a global tissue energy parameter, that relates their areas and their perimeters
     - The cells tend toward a target area $A_0$ and perimeter $P_0$ to minimise their energy.
-    $E ≡ Sum_i [KA(A(ri) − A0)2 + KP (P(ri) − P0)2]$
+    $$E ≡ \sum [KA(A(ri) − A0)^2 + KP (P(ri) − P0)^2]$$
     Where E is the tissue energy, KA and KP are two parameters related respectively to the area and perimeter stiffness, A(ri) and P(ri) are the area and perimeter of the cell of center ri, and A0 and P0 are target area and perimeter toward which cells should tend.
 
 - The cells can move, and the equation of motion can be written as $$dr_i/d_t = µF_i + v_0 n_i$$
