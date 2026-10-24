@@ -1,4 +1,4 @@
-Read manual 
+README 
 =============
 
 # What is this repository?
