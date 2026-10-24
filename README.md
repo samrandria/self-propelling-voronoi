@@ -123,16 +123,6 @@ For instance, if there are 4000 iterations and if pictures are logged every 10 i
 -----
 -----
 
-# Modifying the simulation
-
-This section describes the parameters that can be enabled/disabled directly in the source code.
-In the future, it would be better to be able to enable/disable them with arguments from the command line (e.g. `argument`)
-
-* Quiver ellipses
-* plot_on
------
------
-
 
 # Analyzing simulations
 
