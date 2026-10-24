@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>read_velocity_log &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for read_velocity_log</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Read the data from the velocity log file</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">my_file_tools</span> <span class="k">import</span> <span class="n">get_parameter_regexp</span><span class="p">,</span> <span class="n">save_fig_as</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<div class="viewcode-block" id="read_velocities"><a class="viewcode-back" href="../docs/source/read_velocity_log.html#read_velocity_log.read_velocities">[docs]</a><span class="k">def</span> <span class="nf">read_velocities</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a file where velocities are logged like (with i : iteration, c : cell, x,y : coordinates)</span>
+<span class="sd">    v_i_c_x  v_i_c_y</span>
+<span class="sd">    v_i_c+1_x v_i_c+1_y </span>
+<span class="sd">    ...</span>
+<span class="sd">    v_i+1_c_x  v_i+1_c_y</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    filename : string</span>
+<span class="sd">        name of the file to parse</span>
+
+<span class="sd">    Returns </span>
+<span class="sd">    ------</span>
+<span class="sd">    velocities_array : numpy array</span>
+<span class="sd">        Array containing the velocities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> 
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">logfile</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+
+    <span class="c1"># Now looks like [[&#39;vx0&#39;, &#39;vy0&#39;], [&#39;vx1&#39;, &#39;vy1&#39;]...]</span>
+    <span class="c1"># Convert the strings into floats for the x,y coordinates</span>
+    <span class="n">data_read_float</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span> <span class="p">]</span>
+
+    <span class="c1"># Now convert into a numpy array for easier manipulation</span>
+    <span class="n">data_read_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_read_float</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data_read_array</span></div>
+
+
+
+<div class="viewcode-block" id="plot_mean_velocity"><a class="viewcode-back" href="../docs/source/read_velocity_log.html#read_velocity_log.plot_mean_velocity">[docs]</a><span class="k">def</span> <span class="nf">plot_mean_velocity</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span> <span class="n">iteration_number</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the mean velocity over every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    velocities_vector : numpy array </span>
+<span class="sd">        Array containing the velocities of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Break the velocity vector into &quot;iteration_number&quot; pieces of &quot;point_number&quot; elements (with x and y components)</span>
+    <span class="n">velocities_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="p">[</span><span class="n">iteration_number</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="c1"># FIXME Compute the norm </span>
+    <span class="n">velocities_vector_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">velocities_vector</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mean_velocity_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">velocities_vector_norm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration_number</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="c1"># Plotting part</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Mean velocity of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">mean_velocity_vector</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mean velocity of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Velocity (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<span class="c1">################</span>
+<div class="viewcode-block" id="plot_indiv_velocity"><a class="viewcode-back" href="../docs/source/read_velocity_log.html#read_velocity_log.plot_indiv_velocity">[docs]</a><span class="k">def</span> <span class="nf">plot_indiv_velocity</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span> <span class="n">iteration_number</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span> <span class="n">cell_to_plot</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the velocity of a single cell at every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    velocities_vector : numpy array </span>
+<span class="sd">        Array containing the velocities of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+<span class="sd">    cell_to_plot : int (optional)</span>
+<span class="sd">        Index of the cell whose velocity will be plotted</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Break the velocity vector into &quot;iteration_number&quot; pieces of &quot;point_number&quot; elements (with x and y components)</span>
+    <span class="n">velocities_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="p">[</span><span class="n">iteration_number</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">velocities_vector_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">velocities_vector</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">iteration_number</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="c1"># Plotting part</span>
+    <span class="c1"># FIXME : plot the NORM INSTEAD WTH</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Velocity of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">velocities_vector_norm</span><span class="p">[:,</span><span class="n">cell_to_plot</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Velocity of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Velocity (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="c1">#    path = &quot;./simulation_test_trash/&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>
+    <span class="n">velocities_log_filename</span> <span class="o">=</span> <span class="s2">&quot;velocities_log.csv&quot;</span>
+    <span class="n">velocities_log_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">velocities_log_filename</span><span class="p">)</span>
+    <span class="n">logfilename</span> <span class="o">=</span> <span class="s2">&quot;logfile.txt&quot;</span>
+    <span class="n">logfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">logfilename</span><span class="p">)</span>
+   
+    <span class="c1"># Simulation parameters</span>
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">get_parameter_regexp</span><span class="p">(</span><span class="n">logfilename</span><span class="p">,</span> <span class="s2">&quot;delta_t&quot;</span><span class="p">)</span>
+    <span class="n">point_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_parameter_regexp</span><span class="p">(</span><span class="n">logfilename</span><span class="p">,</span> <span class="s2">&quot;point_number&quot;</span><span class="p">))</span>
+    <span class="n">iteration_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_parameter_regexp</span><span class="p">(</span><span class="n">logfilename</span><span class="p">,</span> <span class="s2">&quot;iteration_number&quot;</span><span class="p">))</span>
+
+    <span class="n">velocities</span> <span class="o">=</span> <span class="n">read_velocities</span><span class="p">(</span><span class="n">velocities_log_filename</span><span class="p">)</span>
+
+    <span class="n">figure_mean_velocity</span> <span class="o">=</span> <span class="n">plot_mean_velocity</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span> <span class="n">iteration_number</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;mean_velocity.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_mean_velocity</span><span class="p">)</span>
+
+    <span class="c1"># XXX : change cell to plot if needed</span>
+    <span class="n">cell_to_plot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">figure_indiv_velocity</span> <span class="o">=</span> <span class="n">plot_indiv_velocity</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">point_number</span><span class="p">,</span> <span class="n">iteration_number</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span> <span class="n">cell_to_plot</span><span class="o">=</span><span class="n">cell_to_plot</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;individual_velocity_cell_</span><span class="si">{}</span><span class="s2">.png&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_indiv_velocity</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

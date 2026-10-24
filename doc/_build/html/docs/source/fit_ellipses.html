@@ -1,0 +1,272 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>fit_ellipses module &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fit_ellipses">
+<span id="fit-ellipses-module"></span><h1>fit_ellipses module<a class="headerlink" href="#module-fit_ellipses" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="fit_ellipses.compute_central_moment_tensors_full">
+<code class="descclassname">fit_ellipses.</code><code class="descname">compute_central_moment_tensors_full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.compute_central_moment_tensors_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a central moment tensor (u) for every cell (simple polygons, 0th, 1st and 2nd moments)
+Based on Mulchrone and Choudhury, J. of Structural Geology 26 (2004)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>moment_tensors</strong> (<em>numpy array</em>) – Array of 3X3 tensors for every cell</li>
+<li><strong>points</strong> (<em>numpy array</em>) – Coordinates of Voronoi centers</li>
+<li><strong>areas</strong> (<em>numpy array</em>) – Areas of Voronoi cells</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>central_moment_tensors</strong> – Array of 3X3 central moment tensors for every cell</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.compute_ellipse_parameters">
+<code class="descclassname">fit_ellipses.</code><code class="descname">compute_ellipse_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.compute_ellipse_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the fitted ellipses for every cell using the central moment tensors
+Based on Mulchrone and Choudhury, J. of Structural Geology 26 (2004)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>central_moment_tensors</strong> (<em>numpy array</em>) – Array of 3X3 central moment tensors for every cell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>semi_minor_axes</strong> (<em>numpy array</em>) – Semi minor axes of the fitted ellipse</li>
+<li><strong>semi_major_axes</strong> (<em>numpy array</em>) – Semi major axes of the fitted ellipse</li>
+<li><strong>angles_alpha</strong> (<em>numpy array</em>) – Angles (in radian) between the major axis of the fitted ellipse and the positive x-axis</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.compute_moment_tensors_full">
+<code class="descclassname">fit_ellipses.</code><code class="descname">compute_moment_tensors_full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.compute_moment_tensors_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a moment tensor for every cell (simple polygons, 0th, 1st and 2nd moments)
+Based on Mulchrone and Choudhury, J. of Structural Geology 26 (2004)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates of cell vertices</li>
+<li><strong>points</strong> (<em>numpy array</em>) – Coordinates of Voronoi centers</li>
+<li><strong>areas</strong> (<em>numpy array</em>) – Areas of Voronoi cells</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>moment_tensors</strong> – Array of 3X3 tensors for every cell</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.create_polygons">
+<code class="descclassname">fit_ellipses.</code><code class="descname">create_polygons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.create_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handmade polygons for testing purposes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.ellipse_Hiraiwa">
+<code class="descclassname">fit_ellipses.</code><code class="descname">ellipse_Hiraiwa</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.ellipse_Hiraiwa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.fit_ellipses_to_cells">
+<code class="descclassname">fit_ellipses.</code><code class="descname">fit_ellipses_to_cells</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.fit_ellipses_to_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the “best fit” ellipse to Voronoi cells (or any polygons) using their moment tensors and their central moment tensors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates of cell vertices</li>
+<li><strong>points</strong> (<em>numpy array</em>) – Coordinates of Voronoi centers</li>
+<li><strong>areas</strong> (<em>numpy array</em>) – Areas of Voronoi cells</li>
+<li><strong>debug</strong> (<em>boolean</em>) – When true, compute angles between the major axis and the x-axis with and without an absolute value on the denominator.</li>
+<li><strong>plot_on</strong> (<em>boolean</em>) – When true, plots the ellipses on a graph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>semi_minor_axes</strong> (<em>numpy array</em>) – Semi minor axes of the fitted ellipse</li>
+<li><strong>semi_major_axes</strong> (<em>numpy array</em>) – Semi major axes of the fitted ellipse</li>
+<li><strong>angles_alpha</strong> (<em>numpy array</em>) – Angles (in radian) between the major axis of the fitted ellipse and the positive x-axis.
+Returns the no_abs angles when debug=True</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.plot_ellipse">
+<code class="descclassname">fit_ellipses.</code><code class="descname">plot_ellipse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.plot_ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes that we possess every parameter, this is purely a plotting function.
+Note for Ellipse:
+width = total length (diameter) of horizontal axis
+height = total length (diameter) of vertical axis
+angle = rotation ink</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>semi_major_axes</strong> (<em>numpy array</em>) – Semi major axes of the fitted ellipses</li>
+<li><strong>semi_minor_axes</strong> (<em>numpy array</em>) – Semi minor axes of the fitted ellipses</li>
+<li><strong>angles_alpha</strong> – Values in radians</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong># TODO</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">what are the best practices for figures</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.plot_full_polygons">
+<code class="descclassname">fit_ellipses.</code><code class="descname">plot_full_polygons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.plot_full_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the polygon entirely by circling through every point</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates of cell vertices</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fit_ellipses.rotation_matrix">
+<code class="descclassname">fit_ellipses.</code><code class="descname">rotation_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fit_ellipses.rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation matrix to apply to polygons</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>angle</strong> (<em>double</em>) – Angle of rotation  in radians.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/docs/source/fit_ellipses.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/docs/source/fit_ellipses.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

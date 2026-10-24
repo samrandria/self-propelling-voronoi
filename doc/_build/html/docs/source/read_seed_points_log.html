@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>read_seed_points_log module &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-read_seed_points_log">
+<span id="read-seed-points-log-module"></span><h1>read_seed_points_log module<a class="headerlink" href="#module-read_seed_points_log" title="Permalink to this headline">¶</a></h1>
+<p>Read the seed points coordinates in a csv file with the following format:
+<a href="#id1"><span class="problematic" id="id2">|[x0_0 y0_0]|</span></a> <a href="#id3"><span class="problematic" id="id4">|[x1_0 y1_0]|</span></a> …
+<a href="#id5"><span class="problematic" id="id6">|[x0_1 y0_1]|</span></a> <a href="#id7"><span class="problematic" id="id8">|[x1_1 y1_1]|</span></a> …</p>
+<dl class="function">
+<dt id="read_seed_points_log.get_and_plot_tracked_trajectory">
+<code class="descclassname">read_seed_points_log.</code><code class="descname">get_and_plot_tracked_trajectory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#read_seed_points_log.get_and_plot_tracked_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquire the displacement of a cell center over time from a log file and plot it.</p>
+<dl class="docutils">
+<dt>point_coordinates_over_time <span class="classifier-delimiter">:</span> <span class="classifier">numpy array</span></dt>
+<dd>All the coordinates of a single cell over time</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="read_seed_points_log.get_and_plot_tracked_trajectory_all">
+<code class="descclassname">read_seed_points_log.</code><code class="descname">get_and_plot_tracked_trajectory_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#read_seed_points_log.get_and_plot_tracked_trajectory_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acquire the displacement of a cell center over time from a log file and plot it.</p>
+<dl class="docutils">
+<dt>point_coordinates_over_time <span class="classifier-delimiter">:</span> <span class="classifier">numpy array</span></dt>
+<dd>All the coordinates of a single cell over time</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="read_seed_points_log.get_state_at_iteration">
+<code class="descclassname">read_seed_points_log.</code><code class="descname">get_state_at_iteration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#read_seed_points_log.get_state_at_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a “state” from a seed_point_log where all the seed coordinates are given on one line for for one iteration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>state_array</strong> (<em>numpy array</em>) – Iterations extracted from a seed_point_log.csv file</li>
+<li><strong>iteration</strong> (<em>int</em>) – Iteration at which we want to get the state</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>state_at_iteration</strong> – Coordinates of seed points at the specified iteration</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="read_seed_points_log.read_seed_points">
+<code class="descclassname">read_seed_points_log.</code><code class="descname">read_seed_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#read_seed_points_log.read_seed_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the coordinates in a csv file with the following format:
+<a href="#id9"><span class="problematic" id="id10">|[x0_0 y0_0]|</span></a> <a href="#id11"><span class="problematic" id="id12">|[x1_0 y1_0]|</span></a> …
+<a href="#id13"><span class="problematic" id="id14">|[x0_1 y0_1]|</span></a> <a href="#id15"><span class="problematic" id="id16">|[x1_1 y1_1]|</span></a> …
+And convert them into a numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – Name of the csv log file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>filename</strong> (<em>string</em>)</li>
+<li><strong>data_read_array</strong> (<em>numpy array</em>) – Parsed data from the csv log file. Every row contains the position of every seed points for an iteration. Each row represents an iteration.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="read_seed_points_log.reconstruct_state_at_iteration">
+<code class="descclassname">read_seed_points_log.</code><code class="descname">reconstruct_state_at_iteration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#read_seed_points_log.reconstruct_state_at_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads from a seed_point_log.csv file and extracts the position of every seed points at a given iteration. Generate a periodic tesselation around the observation box.</p>
+<p>Note : this is a convenience function for one call. If multiple calls, use read_seed_points() once,
+and then call get_state_at_iteration and periodic boundaries as needed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) – Name of the seed poing log csv file.</li>
+<li><strong>iteration</strong> (<em>int</em>) – Desired iteration to reconstruct</li>
+<li><strong>boxsize</strong> (<em>float</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>state</strong> (<em>numpy array</em>) – Array of seed points coordinates at the specified iteration</li>
+<li><strong>extended_points</strong> (<em>numpy array</em>) – state + periodic boundaric conditions around the observation box</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/docs/source/read_seed_points_log.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/docs/source/read_seed_points_log.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

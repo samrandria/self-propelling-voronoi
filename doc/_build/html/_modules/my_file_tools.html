@@ -1,0 +1,152 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>my_file_tools &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for my_file_tools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">My useful file tools</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> 
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<div class="viewcode-block" id="save_fig_as"><a class="viewcode-back" href="../docs/source/my_file_tools.html#my_file_tools.save_fig_as">[docs]</a><span class="k">def</span> <span class="nf">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Joins automatically the path and the desired filename to save the current figure</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    path : string </span>
+<span class="sd">        Path to the directory in which the figure should be saved</span>
+<span class="sd">    filename : string</span>
+<span class="sd">        Desired filename for the saved figure</span>
+<span class="sd">    </span>
+<span class="sd">    Returns </span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">figure_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figure_filename</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_parameter_regexp"><a class="viewcode-back" href="../docs/source/my_file_tools.html#my_file_tools.get_parameter_regexp">[docs]</a><span class="k">def</span> <span class="nf">get_parameter_regexp</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">parameter_to_fetch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Using regular expression, fetch the value of a parameter used in the simulation from the logfile</span>
+<span class="sd">    Might be overkill, but it should withstand changes in the logfile layout.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    filename : String</span>
+<span class="sd">        Name of the logfile</span>
+<span class="sd">    parameter_to_fetch : String</span>
+<span class="sd">        Parameter to look for in the logfile </span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    parameter_value : float</span>
+<span class="sd">        Value of the parameter fetched in the simulation logfile</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Avoid surprise</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">parameter_to_fetch</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameter_to_fetch</span><span class="p">)</span>
+
+    <span class="c1"># [0-9]+ : search for one or more numeric character</span>
+    <span class="c1"># i.e. &quot;243&quot; : finds 243 ; 245a6 : finds 245 ; b24r : finds 24</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> = [+-]?([0-9]*[.])?[0-9]+&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameter_to_fetch</span><span class="p">)</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+    <span class="c1"># TODO : there should be a try/except in case the parameter is not found</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">regexp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Only interested in the first match</span>
+                <span class="n">pattern_found</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">break</span>
+
+    <span class="c1"># Process the result</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pattern_found</span> <span class="o">=</span> <span class="n">pattern_found</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>         
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No pattern was found&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Get the last item of the list (which should be the number of points) and cast into a float by default</span>
+        <span class="c1"># Manually recast it if needed</span>
+        <span class="n">parameter_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pattern_found</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">parameter_value</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

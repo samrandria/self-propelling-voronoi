@@ -1,0 +1,403 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>read_area_perimeter_log &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for read_area_perimeter_log</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Read area log</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> 
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">MSD</span>
+<span class="kn">from</span> <span class="nn">my_file_tools</span> <span class="k">import</span> <span class="n">save_fig_as</span><span class="p">,</span> <span class="n">get_parameter_regexp</span>
+
+
+<div class="viewcode-block" id="read_area_log_modified_x"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.read_area_log_modified_x">[docs]</a><span class="k">def</span> <span class="nf">read_area_log_modified_x</span><span class="p">(</span><span class="n">zone_to_print</span><span class="p">):</span>
+    <span class="c1"># Get the path </span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;areas_log_modified_x.csv&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># Open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+        <span class="c1"># We now have a list of strings like [[&#39;1.1 2.2 3.3&#39;],[&#39;4.4 5.5 6.6&#39;], [&#39;7.7 8.8 9.9&#39;]]</span>
+
+
+    <span class="c1"># Split the strings into  [[&#39;1.1&#39;, &#39;2.2&#39;, &#39;3.3&#39;],[&#39;4.4&#39;,&#39;5.5&#39;, &#39;6.6&#39;], [&#39;7.7&#39;, &#39;8.8&#39;, &#39;9.9&#39;]]</span>
+    <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">]</span>
+
+    <span class="c1"># Convert each string element into a float</span>
+    <span class="c1"># #Black_magic</span>
+    <span class="n">float_data_read</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">:</span>
+        <span class="n">float_data_read</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+
+    <span class="c1"># Now convert the list into a numpy array</span>
+    <span class="n">float_data_read</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">)</span>
+
+    <span class="c1"># Plot the stuff</span>
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">)):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nb_iter</span><span class="p">,</span><span class="n">float_data_read</span><span class="p">[:,</span><span class="n">zone_to_print</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;iteration </span><span class="si">{}</span><span class="s2">, index </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+            <span class="c1"># for index in range(len(float_data_read[0])):</span>
+                    <span class="c1"># plt.plot(nb_iter,float_data_read[:,index], label=&quot;iteration {}, index {}&quot;.format(iteration,index))</span>
+                    <span class="c1"># plt.legend()</span>
+
+    <span class="c1"># Display it </span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Area after modification in x variation, Zone </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zone_to_print</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Line number&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Area (a.u)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="read_area_log_modified_y"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.read_area_log_modified_y">[docs]</a><span class="k">def</span> <span class="nf">read_area_log_modified_y</span><span class="p">(</span><span class="n">zone_to_print</span><span class="p">):</span>
+    <span class="c1"># Get the path </span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;areas_log_modified_y.csv&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># Open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+        <span class="c1"># We now have a list of strings like [[&#39;1.1 2.2 3.3&#39;],[&#39;4.4 5.5 6.6&#39;], [&#39;7.7 8.8 9.9&#39;]]</span>
+
+
+    <span class="c1"># Split the strings into  [[&#39;1.1&#39;, &#39;2.2&#39;, &#39;3.3&#39;],[&#39;4.4&#39;,&#39;5.5&#39;, &#39;6.6&#39;], [&#39;7.7&#39;, &#39;8.8&#39;, &#39;9.9&#39;]]</span>
+    <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">]</span>
+
+    <span class="c1"># Convert each string element into a float</span>
+    <span class="c1"># #Black_magic</span>
+    <span class="n">float_data_read</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">:</span>
+        <span class="n">float_data_read</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+
+    <span class="c1"># Now convert the list into a numpy array</span>
+    <span class="n">float_data_read</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">)</span>
+
+    <span class="c1"># Plot the stuff</span>
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">float_data_read</span><span class="p">)):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nb_iter</span><span class="p">,</span><span class="n">float_data_read</span><span class="p">[:,</span><span class="n">zone_to_print</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;iteration </span><span class="si">{}</span><span class="s2">, index </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+            <span class="c1"># for index in range(len(float_data_read[0])):</span>
+                    <span class="c1"># plt.plot(nb_iter,float_data_read[:,index], label=&quot;iteration {}, index {}&quot;.format(iteration,index))</span>
+                    <span class="c1"># plt.legend()</span>
+
+    <span class="c1"># Display it </span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Area after modification in y variation, Zone </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zone_to_print</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Line number&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Area (a.u)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="read_area_log"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.read_area_log">[docs]</a><span class="k">def</span> <span class="nf">read_area_log</span><span class="p">(</span><span class="n">areas_log_filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a numpy array with the areas of every cell for every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    areas_log_filename : string</span>
+<span class="sd">        Name of the file containing all the areas (assumed that path is already joined)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    areas_read : numpy array</span>
+<span class="sd">        Areas for each cell at every iteration    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">areas_log_filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+        <span class="c1"># We now have a list of strings like [[&#39;1.1 2.2 3.3&#39;],[&#39;4.4 5.5 6.6&#39;], [&#39;7.7 8.8 9.9&#39;]]</span>
+
+
+    <span class="c1"># Split the strings into  [[&#39;1.1&#39;, &#39;2.2&#39;, &#39;3.3&#39;],[&#39;4.4&#39;,&#39;5.5&#39;, &#39;6.6&#39;], [&#39;7.7&#39;, &#39;8.8&#39;, &#39;9.9&#39;]]</span>
+    <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">]</span>
+
+    <span class="c1"># Convert each string element into a float</span>
+    <span class="n">areas_read</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">:</span>
+        <span class="n">areas_read</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+
+    <span class="c1"># Now convert the list into a numpy array</span>
+    <span class="n">areas_read</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">areas_read</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">areas_read</span></div>
+
+
+<div class="viewcode-block" id="plot_mean_area"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.plot_mean_area">[docs]</a><span class="k">def</span> <span class="nf">plot_mean_area</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the mean area over every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    areas_vector : numpy array </span>
+<span class="sd">        Array containing the areas of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">)</span>
+
+    <span class="n">mean_area_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="c1"># Plotting part</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Mean area of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">mean_area_vector</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mean area of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Area (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<span class="c1">################</span>
+<div class="viewcode-block" id="plot_indiv_area"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.plot_indiv_area">[docs]</a><span class="k">def</span> <span class="nf">plot_indiv_area</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span> <span class="n">cell_to_plot</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the area of a single cell at every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    areas_vector : numpy array </span>
+<span class="sd">        Array containing the areas of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+<span class="sd">    cell_to_plot : int (optional)</span>
+<span class="sd">        Index of the cell whose area will be plotted</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">)</span>
+    
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="c1"># Plotting part</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Area of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">areas_vector</span><span class="p">[:,</span><span class="n">cell_to_plot</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Area of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Area (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="read_perimeter_log"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.read_perimeter_log">[docs]</a><span class="k">def</span> <span class="nf">read_perimeter_log</span><span class="p">(</span><span class="n">perimeters_log_filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a numpy array with the perimeters of every cell for every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    perimeters_log_filename : string</span>
+<span class="sd">        Name of the file containing all the perimeters (assumed that path is already joined)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    perimeters_read : numpy array</span>
+<span class="sd">        Perimeters for each cell at every iteration    </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">perimeters_log_filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+        <span class="c1"># We now have a list of strings like [[&#39;1.1 2.2 3.3&#39;],[&#39;4.4 5.5 6.6&#39;], [&#39;7.7 8.8 9.9&#39;]]</span>
+
+
+    <span class="c1"># Split the strings into  [[&#39;1.1&#39;, &#39;2.2&#39;, &#39;3.3&#39;],[&#39;4.4&#39;,&#39;5.5&#39;, &#39;6.6&#39;], [&#39;7.7&#39;, &#39;8.8&#39;, &#39;9.9&#39;]]</span>
+    <span class="n">data_read</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">]</span>
+
+    <span class="c1"># Convert each string element into a float</span>
+    <span class="n">perimeters_read</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_read</span><span class="p">:</span>
+        <span class="n">perimeters_read</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+
+    <span class="c1"># Now convert the list into a numpy array</span>
+    <span class="n">perimeters_read</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">perimeters_read</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">perimeters_read</span></div>
+
+
+<div class="viewcode-block" id="plot_mean_perimeter"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.plot_mean_perimeter">[docs]</a><span class="k">def</span> <span class="nf">plot_mean_perimeter</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the mean perimeter over every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    perimeters_vector : numpy array </span>
+<span class="sd">        Array containing the perimeters of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">)</span>
+
+    <span class="n">mean_perimeter_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="c1"># Plotting part</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Mean perimeter of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">mean_perimeter_vector</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mean perimeter of the system over time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Perimeter (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="plot_indiv_parameter"><a class="viewcode-back" href="../docs/source/read_area_perimeter_log.html#read_area_perimeter_log.plot_indiv_parameter">[docs]</a><span class="k">def</span> <span class="nf">plot_indiv_parameter</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span> <span class="n">cell_to_plot</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the perimeter of a single cell at every iteration</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    perimeters_vector : numpy array </span>
+<span class="sd">        Array containing the perimeters of each cell for every iteration</span>
+<span class="sd">    delta_t : float</span>
+<span class="sd">        Time step between two iterations</span>
+<span class="sd">    cell_to_plot : int (optional)</span>
+<span class="sd">        Index of the cell whose perimeter will be plotted</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nb_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">)</span>
+    
+    <span class="c1"># Create an evenly spaced time vector</span>
+    <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nb_iter</span><span class="o">*</span><span class="n">delta_t</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Perimeter of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_vector</span><span class="p">,</span> <span class="n">perimeters_vector</span><span class="p">[:,</span><span class="n">cell_to_plot</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Perimeter of cell </span><span class="si">{}</span><span class="s2"> over time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Perimeter (a.u)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.show()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># read_area_log_modified_x(1)</span>
+    <span class="c1"># read_area_log_modified_y(1)</span>
+    <span class="c1"># read_area_log_indiv(0)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>
+    <span class="n">logfilename</span> <span class="o">=</span> <span class="s2">&quot;logfile.txt&quot;</span>
+    <span class="n">logfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">logfilename</span><span class="p">)</span>
+    <span class="n">areas_log_filename</span> <span class="o">=</span> <span class="s2">&quot;areas_log.csv&quot;</span>
+    <span class="n">areas_log_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">areas_log_filename</span><span class="p">)</span>
+
+    <span class="n">perimeters_log_filename</span> <span class="o">=</span> <span class="s2">&quot;perimeters_log.csv&quot;</span>
+    <span class="n">perimeters_log_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">perimeters_log_filename</span><span class="p">)</span>
+
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">get_parameter_regexp</span><span class="p">(</span><span class="n">logfilename</span><span class="p">,</span> <span class="s2">&quot;delta_t&quot;</span><span class="p">)</span>
+
+    <span class="c1"># FIXME</span>
+    <span class="n">cell_to_plot</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="c1">## Part area</span>
+    <span class="n">areas_vector</span> <span class="o">=</span> <span class="n">read_area_log</span><span class="p">(</span><span class="n">areas_log_filename</span><span class="p">)</span>
+    <span class="n">figure_mean_area</span> <span class="o">=</span> <span class="n">plot_mean_area</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;mean_area.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_mean_area</span><span class="p">)</span>
+
+    <span class="n">figure_indiv_area</span> <span class="o">=</span> <span class="n">plot_indiv_area</span><span class="p">(</span><span class="n">areas_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span><span class="n">cell_to_plot</span><span class="o">=</span><span class="n">cell_to_plot</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;indiv_area_cell_</span><span class="si">{}</span><span class="s2">.png&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_indiv_area</span><span class="p">)</span>
+    <span class="c1">## Part perimeter</span>
+    <span class="n">perimeters_vector</span> <span class="o">=</span> <span class="n">read_perimeter_log</span><span class="p">(</span><span class="n">perimeters_log_filename</span><span class="p">)</span>
+    <span class="n">figure_mean_perimeter</span> <span class="o">=</span> <span class="n">plot_mean_perimeter</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;mean_perimeter.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_mean_perimeter</span><span class="p">)</span>
+    <span class="n">figure_indiv_perimeter</span> <span class="o">=</span> <span class="n">plot_indiv_parameter</span><span class="p">(</span><span class="n">perimeters_vector</span><span class="p">,</span> <span class="n">delta_t</span><span class="p">,</span> <span class="n">cell_to_plot</span><span class="o">=</span><span class="n">cell_to_plot</span><span class="p">)</span>
+    <span class="n">save_fig_as</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;indiv_perimeter_cell_</span><span class="si">{}</span><span class="s2">.png&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_to_plot</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figure_indiv_perimeter</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

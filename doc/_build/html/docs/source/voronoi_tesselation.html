@@ -1,0 +1,432 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>voronoi_tesselation module &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-voronoi_tesselation">
+<span id="voronoi-tesselation-module"></span><h1>voronoi_tesselation module<a class="headerlink" href="#module-voronoi_tesselation" title="Permalink to this headline">¶</a></h1>
+<p>Voronoi tesselation of space using scipy</p>
+<p>Use the Qhull library (can compute Delaunay triangulation and Voronoi diagram).
+Cannot compute Voronoi volumes or weighted Voronoi diagrams.</p>
+<dl class="function">
+<dt id="voronoi_tesselation.find_vertex_index_in_region">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">find_vertex_index_in_region</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.find_vertex_index_in_region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locates the relative index of the vertex absolute index “vertex_value” within the region “regions[index_region]”
+Useful when knowing that an absolute vertex index value is present and when looking for the adjacent vertices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>index_region</strong> (<em>int</em><em>, </em><em>index of the region to check</em>) – </li>
+<li><strong>vertex_value</strong> (<em>value of the vertex one wants to look for</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>found</strong> (<em>boolean, indicates if the vertex_value actually exists in the region</em>)</li>
+<li><strong>index_vertex</strong> (<em>int, relative index WITHIN the region</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example :
+Region is [4, 7, 9, 8, 5] and we’re looking for the vertex 9
+return index_vertex = 2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.generate_hexagonal_seed">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">generate_hexagonal_seed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.generate_hexagonal_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create seed points (Voronoi center) on a controlled or “noisy” (with a bit of noise) hexagonal lattice, and applies periodic boundary conditions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point_number</strong> (<em>int</em>) – Number of seed point to create</li>
+<li><strong>boxsize</strong> (<em>float</em>) – Length of the axis for observation box (assumed square for now)</li>
+<li><strong>lattice_noise</strong> (<em>float</em>) – Intensity of the noise applied to the lattice seed points</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>generated_points</strong> (<em>ndarray of ndarray</em>) – Array of seed points on a lattice (of coordinates x,y)</li>
+<li><strong>generated_angles</strong> (<em>ndarray</em>) – Array of randomly drawn angles in radians</li>
+<li><strong>generated_polarities</strong> (<em>ndarray of double</em>) – Array of polarity vectors (cos theta_i, sin theta_i), initialized with random initial values</li>
+<li><strong>(in the future maybe)</strong> (<em>flag</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.generate_periodic_voronoi_cells">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">generate_periodic_voronoi_cells</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.generate_periodic_voronoi_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the initialized points around the observation box of size “boxsize”</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>points</strong> (<em>numpy array of arrays</em>) – (x,y) coordinates of the Voronoi centers</li>
+<li><strong>boxsize</strong> (<em>float</em>) – Size of a side of the observation box (assumed square-shaped)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>extended_points</strong> – (x,y) coordinates of the Voronoi centers and their copy</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array of arrays</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.generate_periodic_voronoi_cells_2">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">generate_periodic_voronoi_cells_2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.generate_periodic_voronoi_cells_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the initialized points around the observation box of size “boxsize”, over the 8 nearest regions
+C-like version (250+ times faster than the pure python)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>points</strong> (<em>numpy array of arrays</em>) – (x,y) coordinates of the Voronoi centers</li>
+<li><strong>boxsize</strong> (<em>float</em>) – Size of a side of the observation box (assumed square-shaped)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>extended_points</strong> – (x,y) coordinates of the Voronoi centers and their copy</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array of arrays</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.get_nearest_neighbors">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">get_nearest_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.get_nearest_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Euclidean distance between the point vertices[region[index]]
+and the other vertices WITHIN a region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>region</strong> (<em>a single finite region from the Voronoi tesselation</em>) – </li>
+<li><strong>index</strong> (<em>the index of the point of interest of which we are looking for the nearest neighbors</em>) – </li>
+<li><strong>vertices</strong> (<em>a list of lists</em><em> (</em><em>vertices</em><em>)</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nearest_neighbors</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array with indices referring to the vertices list ordered from closest to furthest</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.get_polygons_properties_2d">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">get_polygons_properties_2d</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.get_polygons_properties_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the perimeters and the areas of every cell defined by the regions and vertices passed as parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>None</strong> (<em>None</em>) – Placeholder for backward compatibility</li>
+<li><strong>perimeters</strong> (<em>numpy array</em>) – Perimeter of each region in regions treated</li>
+<li><strong>areas</strong> (<em>numpy array</em>) – Area of each region in regions treated</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.get_polygons_properties_2d_Qhull">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">get_polygons_properties_2d_Qhull</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.get_polygons_properties_2d_Qhull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the perimeter and area for each finite polygon in 2D
+Partially Cython typed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>properties_index</strong> (<em>numpy array</em>) – List of index for each region in regions treated (probably not useful since perimeter and area are
+already acquired in the order of region in regions)</li>
+<li><strong>properties_perimeter</strong> (<em>numpy array</em>) – Perimeter of each region in regions treated</li>
+<li><strong>properties_area</strong> (<em>numpy array</em>) – Area of each region in regions treated
+Warning : In 2D : ConvexHull.area is the perimeter, while ConvexHull.volume is the area</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.get_shared_vertices">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">get_shared_vertices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.get_shared_vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines which vertices are shared between regions[index_interest] and the
+other regions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>index_interest</strong> (<em>int</em>) – Index of the region of interest</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>list_adjacent_regions</strong> (<em>list of indices</em>) – Returns a list with the absolute indices of a “region” in the regions list obtained from voronoi_finite_polygons_2d</li>
+<li><strong>list_shared_vertices</strong> (<em>list of lists</em>) – Returns a list of list of format [(list of shared vertices] between region[index_interest] and region[index_neighbor])</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.is_sorted_counterclockwise">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">is_sorted_counterclockwise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.is_sorted_counterclockwise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the determinant of the orientation matrix for three vertices per region of a simple convex polygon.
+If positive, the polygon is sorted counterclockwise. Otherwise it is sorted clockwise (assuming there is self intersection or hole in the polygon)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>sorted_counterclockwise_truth_table</strong> – Contains True if the determinant is positive (and the polygon is sorted counter clockwise), False otherwise</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.plot_contour">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">plot_contour</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.plot_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the contour of the observation box for cell symmetry observation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>boxsize</strong> (<em>float</em><em> (or </em><em>int</em><em>)</em>) – Size of the observation box.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Nothing.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.plot_polygons">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">plot_polygons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.plot_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graphical function to plot polygons by circling through their vertices.</p>
+<p>Note that while the Voronoi regions are finite, they may still go beyond the box</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vor</strong> (<em>A Voronoi object</em>) – </li>
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>list of lists</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.sort_vertices_counterclockwise">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">sort_vertices_counterclockwise</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.sort_vertices_counterclockwise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverse the regions where sorted_counterclockwise_truth_table is false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.</li>
+<li><strong>vertices</strong> (<em>numpy array</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+<li><strong>sorted_counterclockwise_truth_table</strong> (<em>np array</em>) – Contains True if the determinant is positive (and the polygon is sorted counter clockwise), False otherwise</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>regions_sorted_counterclockwise</strong> – Indices of vertices in each revised Voronoi regions sorted counter clockwisely</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of lists</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="voronoi_tesselation.voronoi_finite_polygons_2d">
+<code class="descclassname">voronoi_tesselation.</code><code class="descname">voronoi_finite_polygons_2d</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#voronoi_tesselation.voronoi_finite_polygons_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct infinite voronoi regions in a 2D diagram to finite regions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vor</strong> (<em>Voronoi</em>) – Input diagram</li>
+<li><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Distance to ‘points at infinity’.</li>
+<li><strong>point_number</strong> (<em>int</em>) – Limits the number of regions to sort. If None is given, the sorting algorithm will run through all the regions, including the ones outside the observation box</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>regions</strong> (<em>list of lists</em>) – Indices of vertices in each revised Voronoi regions.
+Vertices are sorted counter-clockwise.</li>
+<li><strong>vertices</strong> (<em>list of lists</em>) – Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with ‘points at infinity’ appended to the
+end.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/docs/source/voronoi_tesselation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../../_sources/docs/source/voronoi_tesselation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

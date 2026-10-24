@@ -1,0 +1,461 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>The SPV module API reference &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-MSD">
+<span id="the-spv-module-api-reference"></span><h1>The SPV module API reference<a class="headerlink" href="#module-MSD" title="Permalink to this headline">¶</a></h1>
+<p>Mean Square Displacement calculator
+If the seed points identity is conserved throughout the iterations (which is most likely the case visually,
+due to our colour trackers), then we can just parse the seed_point_log and compute difference in position from it ?).
+This will have to take into account periodic boundary displacement.</p>
+<dl class="function">
+<dt id="MSD.MSD_analysis">
+<code class="descclassname">MSD.</code><code class="descname">MSD_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.MSD_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens the necessary logs to compute the MSD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logfilename</strong> (<em>string</em>) – Name of the logfile containing the parameters for the experiment (already joined with the path)</li>
+<li><strong>velocities_log_filename</strong> (<em>string</em>) – Name of the file containing the log for the velocity of every cell at each iteration (already joined with the path)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>MSD_vector</strong> – Vector with the Mean Sqaured Displacement at every iteration</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_MSD">
+<code class="descclassname">MSD.</code><code class="descname">compute_MSD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_MSD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic version without computation within the center of mass frame</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point_number</strong> (<em>int</em>) – Number of cells in the system</li>
+<li><strong>delta_t</strong> (<em>float</em>) – Timestep between two computations</li>
+<li><strong>iteration_number</strong> (<em>int</em>) – Number of iteration of computation in the system</li>
+<li><strong>velocities</strong> (<em>numpy array</em>) – Array containing the velocities logged for each cell at every iteration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>MSD_vector</strong> – The i-th element is the MSD at the i-th iteration</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array of iteration_number elements</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_MSD_bad">
+<code class="descclassname">MSD.</code><code class="descname">compute_MSD_bad</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_MSD_bad" title="Permalink to this definition">¶</a></dt>
+<dd><p>[DEPRECATED] Compute the Mean Square Displacement : 1/N * (sum_n-&gt;N (x_n(t) - x_n(0)**2)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>numpy array</em>) – States extracted from a seed_point_log.csv file recording position of seed points at every iteration</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>MSD</strong> – Mean Square Displacement of every voronoi cell over time</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_MSD_center_mass">
+<code class="descclassname">MSD.</code><code class="descname">compute_MSD_center_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_MSD_center_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version with computation within the center of mass frame</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point_number</strong> (<em>int</em>) – Number of cells in the system</li>
+<li><strong>delta_t</strong> (<em>float</em>) – Timestep between two computations</li>
+<li><strong>iteration_number</strong> (<em>int</em>) – Number of iteration of computation in the system</li>
+<li><strong>velocities</strong> (<em>numpy array</em>) – Array containing the velocities logged for each cell at every iteration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>MSD_vector</strong> – The i-th element is the MSD at the i-th iteration</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array of iteration_number elements</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_MSD_velocity">
+<code class="descclassname">MSD.</code><code class="descname">compute_MSD_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_MSD_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>[DEPRECATED] Compute the Mean Square Displacement : 1/N * (sum_n-&gt;N [delta_t * (v_n(t) - v_n(0)**2)])</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>velocities</strong> (<em>numpy array</em>) – Velocity vectors for individual cells extracted from a velocities_log.csv file recording the velocity of each seed point at every iteration</li>
+<li><strong>numpy array</strong> (<em>initial_positions</em>) – Reference for the (x,y) positions of the seed points (at iteration 0 or )</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>MSD</strong> – Mean Square Displacement of every voronoi cell over time</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_nematic_scalar_quadrupole">
+<code class="descclassname">MSD.</code><code class="descname">compute_nematic_scalar_quadrupole</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_nematic_scalar_quadrupole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the quadrupole (average of the second Legendre polynomial) as an orientational order parameter (as defined in De Gennes and Prost, The Physics of Liquid Crystals)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>scalar_quadrupole</strong> – Orientational order parameter describing the alignement of liquid crystals</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_orientational_orders">
+<code class="descclassname">MSD.</code><code class="descname">compute_orientational_orders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_orientational_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the average normalized velocity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>TODO</strong> (<em>#</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"># TODO</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.compute_velocities_angles">
+<code class="descclassname">MSD.</code><code class="descname">compute_velocities_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.compute_velocities_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.get_logdirectories_list">
+<code class="descclassname">MSD.</code><code class="descname">get_logdirectories_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.get_logdirectories_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick hack to get the path to the logdirectory of simulation batch.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.orientational_orders_analysis">
+<code class="descclassname">MSD.</code><code class="descname">orientational_orders_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.orientational_orders_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens the necessary logs to compute the orientational orders</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logfilename</strong> (<em>string</em>) – Name of the logfile containing the parameters for the experiment (already joined with the path)</li>
+<li><strong>velocities_log_filename</strong> (<em>string</em>) – Name of the file containing the log for the velocity of every cell at each iteration (already joined with the path)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Orientational orders</strong> – Order parameter of the system. The closer it is to 1, the more ordered the system is.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_MSD">
+<code class="descclassname">MSD.</code><code class="descname">plot_MSD</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_MSD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the Mean Squared Displacement over every iteration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>MSD_vector</strong> (<em>numpy array</em>) – Array containing the MSD for every iteration</li>
+<li><strong>delta_t</strong> (<em>float</em>) – Time step between two iterations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Figure for the plot</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_orientational_orders">
+<code class="descclassname">MSD.</code><code class="descname">plot_orientational_orders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_orientational_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_orientational_orders_all">
+<code class="descclassname">MSD.</code><code class="descname">plot_orientational_orders_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_orientational_orders_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the orientational order evolution for every v_0 value in the simulation batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dir_list</strong> (<em>list</em>) – List of path strings to the logdirectories</li>
+<li><strong>velocities_log_filename</strong> (<em>str</em>) – Name of the velocity logfile</li>
+<li><strong>logfilename</strong> (<em>str</em>) – Name of the simulation logfile</li>
+<li><strong>delta_t</strong> (<em>float</em>) – Timestep between two iterations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Figure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_polar_histogram">
+<code class="descclassname">MSD.</code><code class="descname">plot_polar_histogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_polar_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the distribution of velocities angles as a histogram with polar projection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point_number</strong> (<em>int</em>) – Number of seed points in the observation zone</li>
+<li><strong>iteration_number</strong> (<em>int</em>) – Number of iteration in the simulation</li>
+<li><strong>velocities_angles</strong> (<em>numpy array</em>) – Array containing the orientation angles of the cells velocity vectors</li>
+<li><strong>iteration_to_plot</strong> (<em>int</em>) – The iteration that will be plotted</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Figure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_scalar_quadrupole">
+<code class="descclassname">MSD.</code><code class="descname">plot_scalar_quadrupole</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_scalar_quadrupole" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="MSD.plot_scalar_quadrupole_all">
+<code class="descclassname">MSD.</code><code class="descname">plot_scalar_quadrupole_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MSD.plot_scalar_quadrupole_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the orientational order evolution for every v_0 value in the simulation batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dir_list</strong> (<em>list</em>) – List of path strings to the logdirectories</li>
+<li><strong>fitted_ellipses_angles_coord_logfilename</strong> (<em>str</em>) – Name of the logfile with the coordinates [cos(psi), sin(psi)] of the fitted ellipses angles</li>
+<li><strong>logfilename</strong> (<em>str</em>) – Name of the simulation logfile</li>
+<li><strong>delta_t</strong> (<em>float</em>) – Timestep between two iterations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Figure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="module-parameters_generator">
+<span id="the-saucisse-module"></span><h2>The “saucisse” module<a class="headerlink" href="#module-parameters_generator" title="Permalink to this headline">¶</a></h2>
+<p>Parameters generator.
+Generates a text file with the commands to insert in the job manager.
+Call with python3 parameters.generator.py parameter_to_explore min_parameter max_parameter step_size</p>
+<dl class="function">
+<dt id="parameters_generator.generate_parameters">
+<code class="descclassname">parameters_generator.</code><code class="descname">generate_parameters</code><span class="sig-paren">(</span><em>filename</em>, <em>filename_prefix</em>, <em>parameter_to_explore</em>, <em>min_parameter</em>, <em>max_parameter</em>, <em>step_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/parameters_generator.html#generate_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#parameters_generator.generate_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a textfile containing commands for the job manager with a parameter to explore</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) – Name of the file to register the commands and parameters</li>
+<li><strong>filename_prefix</strong> (<em>string</em>) – e.g. : “/opt/anaconda3/bin/python3 flocking_confluent_marchetti.py”</li>
+<li><strong>parameter_to_explore</strong> (<em>string</em>) – The parameter to vary, e.g. “point_number”, “boxsize”, “K_P”…</li>
+<li><strong>min_parameter</strong> (<em>int</em><em>, </em><em>float</em>) – Start value for the exploration</li>
+<li><strong>max_parameter</strong> (<em>int</em><em>, </em><em>float</em>) – End value for the exploration</li>
+<li><strong>step_size</strong> (<em>int</em><em>, </em><em>float</em>) – Increment size for the exploration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="parameters_generator.write_parameters_file">
+<code class="descclassname">parameters_generator.</code><code class="descname">write_parameters_file</code><span class="sig-paren">(</span><em>filename</em>, <em>filename_prefix</em>, <em>parameter_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/parameters_generator.html#write_parameters_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#parameters_generator.write_parameters_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenates a command prefix and the string of parameters to build a full command</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) – Name of the file to write/append to</li>
+<li><strong>filename_prefix</strong> (<em>string</em>) – e.g. flocking_confluent_marchetti.py</li>
+<li><strong>parameter_string</strong> (<em>string</em>) – String of parameter to run the main script in the “Passed arguments mode”</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The SPV module API reference</a><ul>
+<li><a class="reference internal" href="#module-parameters_generator">The “saucisse” module</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

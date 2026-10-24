@@ -1,0 +1,246 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>parameters_generator &#8212; spv_marchetti 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for parameters_generator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Parameters generator.</span>
+<span class="sd">Generates a text file with the commands to insert in the job manager.</span>
+<span class="sd">Call with python3 parameters.generator.py parameter_to_explore min_parameter max_parameter step_size</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<div class="viewcode-block" id="generate_parameters"><a class="viewcode-back" href="../api.html#parameters_generator.generate_parameters">[docs]</a><span class="k">def</span> <span class="nf">generate_parameters</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span> <span class="n">parameter_to_explore</span><span class="p">,</span> <span class="n">min_parameter</span><span class="p">,</span> <span class="n">max_parameter</span><span class="p">,</span> <span class="n">step_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a textfile containing commands for the job manager with a parameter to explore</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    filename : string</span>
+<span class="sd">        Name of the file to register the commands and parameters</span>
+<span class="sd">    filename_prefix : string</span>
+<span class="sd">        e.g. : &quot;/opt/anaconda3/bin/python3 flocking_confluent_marchetti.py&quot;</span>
+<span class="sd">    parameter_to_explore : string</span>
+<span class="sd">        The parameter to vary, e.g. &quot;point_number&quot;, &quot;boxsize&quot;, &quot;K_P&quot;...</span>
+<span class="sd">    min_parameter : int, float</span>
+<span class="sd">        Start value for the exploration</span>
+<span class="sd">    max_parameter : int, float</span>
+<span class="sd">        End value for the exploration</span>
+<span class="sd">    step_size : int, float</span>
+<span class="sd">        Increment size for the exploration</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Technically already passed as a string but let&#39;s avoid surprises</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameter_to_explore</span><span class="p">)</span>
+
+    <span class="n">min_param</span> <span class="o">=</span> <span class="n">min_parameter</span>
+    <span class="n">max_param</span> <span class="o">=</span> <span class="n">max_parameter</span>
+    <span class="n">step_size_param</span> <span class="o">=</span> <span class="n">step_size</span>
+
+    <span class="c1"># Some parameters must be cast into integer to avoid simulation crashes</span>
+    <span class="c1"># FIXME : Actually, we don&#39;t care, proper casting is done in the main script, we write strings anyway</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;point_number&#39;</span> <span class="ow">or</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;iteration_number&#39;</span><span class="p">):</span>
+        <span class="n">min_param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">min_param</span><span class="p">)</span>
+        <span class="n">max_param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_param</span><span class="p">)</span>
+        <span class="n">step_size_param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_size_param</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">min_param</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_param</span><span class="p">)</span>
+        <span class="n">max_param</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_param</span><span class="p">)</span>
+        <span class="n">step_size_param</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">step_size_param</span><span class="p">)</span>
+
+    <span class="c1"># Load some base parameters for the dictionary</span>
+    <span class="n">point_number</span> <span class="o">=</span> <span class="mi">100</span> 
+    <span class="n">boxsize</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">iteration_number</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="mf">0.001</span>
+    <span class="n">delta_r</span> <span class="o">=</span> <span class="n">boxsize</span><span class="o">/</span><span class="mf">1000.0</span>
+    <span class="c1"># Target parameters</span>
+    <span class="n">P_0</span> <span class="o">=</span> <span class="mf">5.0</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">A_0</span> <span class="o">=</span> <span class="mf">1.0</span> 
+    <span class="c1"># Cell parameters</span>
+    <span class="n">K_A</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">K_P</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">v_0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">angular_noise</span> <span class="o">=</span> <span class="mf">0.0</span> 
+
+
+    <span class="c1"># Create a dictionary to fetch the value associated to parameter_to_explore</span>
+    <span class="c1"># XXX : In python 3.6 Dictionary REMAINS ORDERED, this is critical for proper writing herefafter</span>
+    <span class="n">parameters_dictionary</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;point_number&#39;</span> <span class="p">:</span> <span class="n">point_number</span><span class="p">,</span> <span class="s1">&#39;boxsize&#39;</span> <span class="p">:</span> <span class="n">boxsize</span><span class="p">,</span> <span class="s1">&#39;iteration_number&#39;</span> <span class="p">:</span> <span class="n">iteration_number</span><span class="p">,</span> 
+                             <span class="s1">&#39;delta_t&#39;</span> <span class="p">:</span> <span class="n">delta_t</span><span class="p">,</span> <span class="s1">&#39;delta_r&#39;</span> <span class="p">:</span> <span class="n">delta_r</span><span class="p">,</span> <span class="s1">&#39;P_0&#39;</span> <span class="p">:</span> <span class="n">P_0</span><span class="p">,</span>
+                             <span class="s1">&#39;A_0&#39;</span> <span class="p">:</span> <span class="n">A_0</span><span class="p">,</span> <span class="s1">&#39;K_A&#39;</span> <span class="p">:</span> <span class="n">K_A</span><span class="p">,</span> <span class="s1">&#39;K_P&#39;</span> <span class="p">:</span> <span class="n">K_P</span><span class="p">,</span>
+                             <span class="s1">&#39;v_0&#39;</span> <span class="p">:</span> <span class="n">v_0</span><span class="p">,</span> <span class="s1">&#39;mu&#39;</span> <span class="p">:</span> <span class="n">mu</span><span class="p">,</span> <span class="s1">&#39;angular_noise&#39;</span> <span class="p">:</span> <span class="n">angular_noise</span><span class="p">}</span>
+    
+
+    <span class="c1"># Check if the parameter_to_explore is a key of the dictionary</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters_dictionary</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Parameter does not exist&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">pass</span>
+
+    <span class="c1"># Test the parameter to explore and fetch the value to modify</span>
+    <span class="c1"># Launch the loop to produce the values in the script     </span>
+
+    <span class="n">parameter_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">value_to_modify</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_param</span><span class="p">,</span> <span class="n">max_param</span><span class="p">,</span> <span class="n">step_size_param</span><span class="p">):</span>
+            <span class="c1"># Update the value in the dictionary </span>
+            <span class="n">parameters_dictionary</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_to_modify</span> 
+
+            <span class="c1"># Create the parameter string by concatenating all the values </span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">parameters_dictionary</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">parameter_string</span> <span class="o">=</span> <span class="n">parameter_string</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="c1"># Append the string to the generated command file</span>
+            <span class="n">write_parameters_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span> <span class="n">parameter_string</span><span class="p">)</span>
+            <span class="c1"># Reset the string</span>
+            <span class="n">parameter_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Erreur&quot;</span><span class="p">)</span></div>
+    
+    
+
+<div class="viewcode-block" id="write_parameters_file"><a class="viewcode-back" href="../api.html#parameters_generator.write_parameters_file">[docs]</a><span class="k">def</span> <span class="nf">write_parameters_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span> <span class="n">parameter_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concatenates a command prefix and the string of parameters to build a full command</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----</span>
+<span class="sd">    filename : string</span>
+<span class="sd">        Name of the file to write/append to </span>
+<span class="sd">    filename_prefix : string</span>
+<span class="sd">        e.g. flocking_confluent_marchetti.py</span>
+<span class="sd">    parameter_string : string</span>
+<span class="sd">        String of parameter to run the main script in the &quot;Passed arguments mode&quot;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -----</span>
+<span class="sd">    Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="c1"># Concate the command prefix and the parameter string</span>
+    <span class="n">string_to_write</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename_prefix</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameter_string</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">txt</span><span class="p">:</span>
+        <span class="n">txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string_to_write</span><span class="p">)</span>
+        <span class="n">txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># FIXME : Hardcoded path : pas terrible.</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span>
+
+    <span class="n">python_path</span> <span class="o">=</span> <span class="s2">&quot;/opt/anaconda3/bin/python3&quot;</span>
+    <span class="c1"># -O flag to disable asserts</span>
+    <span class="n">python_flags</span> <span class="o">=</span> <span class="s2">&quot;-O&quot;</span>
+    <span class="n">main_script_name</span> <span class="o">=</span> <span class="s2">&quot;main_spv_script.py&quot;</span> 
+
+    <span class="n">filename_prefix</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">python_path</span><span class="p">,</span> <span class="n">python_flags</span><span class="p">,</span> <span class="n">main_script_name</span><span class="p">))</span>
+<span class="c1">#    filename_prefix = &quot;/opt/anaconda3/bin/python3 main_spv_script.py&quot;</span>
+
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not enough arguments&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parameter_to_explore</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">min_parameter</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">max_parameter</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">step_size</span><span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;parameter_</span><span class="si">{}</span><span class="s2">_min_</span><span class="si">{}</span><span class="s2">_max_</span><span class="si">{}</span><span class="s2">_step_</span><span class="si">{}</span><span class="s2">.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameter_to_explore</span><span class="p">,</span> <span class="n">min_parameter</span><span class="p">,</span> <span class="n">max_parameter</span><span class="p">,</span> <span class="n">step_size</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+            <span class="n">generate_parameters</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="p">,</span> <span class="n">parameter_to_explore</span><span class="p">,</span> <span class="n">min_parameter</span><span class="p">,</span> <span class="n">max_parameter</span><span class="p">,</span> <span class="n">step_size</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not enough arguments&quot;</span><span class="p">)</span>
+
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Samuel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
